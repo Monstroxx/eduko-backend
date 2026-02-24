@@ -1,0 +1,80 @@
+{
+  "app_name": "Eduko",
+  "auth": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "register": "Registrieren",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "invalid_credentials": "Ungültige Anmeldedaten"
+  },
+  "roles": {
+    "student": "Schüler",
+    "teacher": "Lehrer",
+    "class_teacher": "Klassenlehrer",
+    "admin": "Verwaltung"
+  },
+  "timetable": {
+    "title": "Stundenplan",
+    "subject": "Fach",
+    "room": "Raum",
+    "teacher": "Lehrer",
+    "class": "Klasse",
+    "period": "Stunde"
+  },
+  "attendance": {
+    "title": "Anwesenheit",
+    "present": "Anwesend",
+    "absent": "Abwesend",
+    "late": "Verspätet",
+    "excused_leave": "Beurlaubt"
+  },
+  "excuses": {
+    "title": "Entschuldigungen",
+    "pending": "Ausstehend",
+    "approved": "Entschuldigt",
+    "rejected": "Abgelehnt",
+    "submit": "Einreichen",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "paper_received": "Papier erhalten",
+    "digital": "Digital eingereicht",
+    "paper": "Papier eingereicht",
+    "deadline_exceeded": "Abgabefrist überschritten",
+    "attestation_required": "Attest erforderlich",
+    "date_from": "Von",
+    "date_to": "Bis",
+    "reason": "Grund"
+  },
+  "lessons": {
+    "title": "Lehrstoff",
+    "topic": "Thema",
+    "homework": "Hausaufgaben",
+    "notes": "Notizen"
+  },
+  "appointments": {
+    "title": "Termine",
+    "exam": "Klausur",
+    "test": "Test",
+    "event": "Veranstaltung"
+  },
+  "substitutions": {
+    "title": "Vertretungsplan",
+    "substitution": "Vertretung",
+    "cancellation": "Entfall",
+    "room_change": "Raumänderung"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "back": "Zurück",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "no_data": "Keine Daten vorhanden",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg"
+  }
+}

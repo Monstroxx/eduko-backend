@@ -1,0 +1,80 @@
+{
+  "app_name": "Eduko",
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "username": "Username",
+    "password": "Password",
+    "invalid_credentials": "Invalid credentials"
+  },
+  "roles": {
+    "student": "Student",
+    "teacher": "Teacher",
+    "class_teacher": "Class Teacher",
+    "admin": "Administration"
+  },
+  "timetable": {
+    "title": "Timetable",
+    "subject": "Subject",
+    "room": "Room",
+    "teacher": "Teacher",
+    "class": "Class",
+    "period": "Period"
+  },
+  "attendance": {
+    "title": "Attendance",
+    "present": "Present",
+    "absent": "Absent",
+    "late": "Late",
+    "excused_leave": "Excused Leave"
+  },
+  "excuses": {
+    "title": "Excuses",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "submit": "Submit",
+    "approve": "Approve",
+    "reject": "Reject",
+    "paper_received": "Paper received",
+    "digital": "Submitted digitally",
+    "paper": "Submitted on paper",
+    "deadline_exceeded": "Deadline exceeded",
+    "attestation_required": "Medical certificate required",
+    "date_from": "From",
+    "date_to": "To",
+    "reason": "Reason"
+  },
+  "lessons": {
+    "title": "Lesson Content",
+    "topic": "Topic",
+    "homework": "Homework",
+    "notes": "Notes"
+  },
+  "appointments": {
+    "title": "Appointments",
+    "exam": "Exam",
+    "test": "Test",
+    "event": "Event"
+  },
+  "substitutions": {
+    "title": "Substitutions",
+    "substitution": "Substitution",
+    "cancellation": "Cancellation",
+    "room_change": "Room Change"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "search": "Search",
+    "filter": "Filter",
+    "no_data": "No data available",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+}
