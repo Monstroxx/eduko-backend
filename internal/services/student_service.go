@@ -77,6 +77,38 @@ func (s *StudentService) GetByID(ctx context.Context, schoolID, studentID uuid.U
 	return &sw, nil
 }
 
+type UpdateStudentInput struct {
+	ClassID              *string `json:"class_id"`
+	AttestationRequired  *bool   `json:"attestation_required"`
+}
+
+func (s *StudentService) Update(ctx context.Context, schoolID, studentID uuid.UUID, input UpdateStudentInput) (*StudentWithUser, error) {
+	query := `UPDATE students SET updated_at = NOW()`
+	args := []interface{}{}
+	n := 1
+
+	if input.ClassID != nil {
+		query += fmt.Sprintf(`, class_id = $%d`, n)
+		args = append(args, *input.ClassID)
+		n++
+	}
+	if input.AttestationRequired != nil {
+		query += fmt.Sprintf(`, attestation_required = $%d`, n)
+		args = append(args, *input.AttestationRequired)
+		n++
+	}
+
+	query += fmt.Sprintf(` WHERE id = $%d AND school_id = $%d`, n, n+1)
+	args = append(args, studentID, schoolID)
+
+	_, err := s.db.Exec(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("update student: %w", err)
+	}
+
+	return s.GetByID(ctx, schoolID, studentID)
+}
+
 func (s *StudentService) GetAbsences(ctx context.Context, schoolID, studentID uuid.UUID, from, to string) ([]models.Attendance, error) {
 	query := `SELECT id, school_id, student_id, timetable_entry_id, date, status, recorded_by, note, created_at, updated_at
 	          FROM attendance WHERE school_id = $1 AND student_id = $2 AND status != 'present'`

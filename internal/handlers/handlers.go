@@ -44,7 +44,29 @@ func GetStudent(db *pgxpool.Pool) echo.HandlerFunc {
 	}
 }
 
-func UpdateStudent(db *pgxpool.Pool) echo.HandlerFunc { return stub }
+func UpdateStudent(db *pgxpool.Pool) echo.HandlerFunc {
+	svc := services.NewStudentService(db)
+	return func(c echo.Context) error {
+		schoolID := c.Get("school_id").(uuid.UUID)
+		role := c.Get("role").(string)
+		if role != "admin" && role != "teacher" {
+			return echo.NewHTTPError(http.StatusForbidden, "teachers/admin only")
+		}
+		id, err := uuid.Parse(c.Param("id"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid id")
+		}
+		var req services.UpdateStudentInput
+		if err := c.Bind(&req); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid request")
+		}
+		s, err := svc.Update(c.Request().Context(), schoolID, id, req)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to update student")
+		}
+		return c.JSON(http.StatusOK, s)
+	}
+}
 
 func GetStudentAbsences(db *pgxpool.Pool) echo.HandlerFunc {
 	svc := services.NewStudentService(db)
