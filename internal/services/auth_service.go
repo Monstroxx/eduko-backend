@@ -38,14 +38,27 @@ func (s *AuthService) Login(ctx context.Context, username, password, schoolID, j
 	var user models.User
 	var passwordHash string
 
-	err := s.db.QueryRow(ctx,
-		`SELECT u.id, u.school_id, u.email, u.username, u.role, u.first_name, u.last_name, u.locale, u.is_active, u.password_hash
-		 FROM users u WHERE u.username = $1 AND u.school_id = $2`,
-		username, schoolID,
-	).Scan(
-		&user.ID, &user.SchoolID, &user.Email, &user.Username, &user.Role,
-		&user.FirstName, &user.LastName, &user.Locale, &user.IsActive, &passwordHash,
-	)
+	var err error
+	if schoolID == "" {
+		// Single-school mode: no school_id filter — match by username only.
+		err = s.db.QueryRow(ctx,
+			`SELECT u.id, u.school_id, u.email, u.username, u.role, u.first_name, u.last_name, u.locale, u.is_active, u.password_hash
+			 FROM users u WHERE u.username = $1`,
+			username,
+		).Scan(
+			&user.ID, &user.SchoolID, &user.Email, &user.Username, &user.Role,
+			&user.FirstName, &user.LastName, &user.Locale, &user.IsActive, &passwordHash,
+		)
+	} else {
+		err = s.db.QueryRow(ctx,
+			`SELECT u.id, u.school_id, u.email, u.username, u.role, u.first_name, u.last_name, u.locale, u.is_active, u.password_hash
+			 FROM users u WHERE u.username = $1 AND u.school_id = $2`,
+			username, schoolID,
+		).Scan(
+			&user.ID, &user.SchoolID, &user.Email, &user.Username, &user.Role,
+			&user.FirstName, &user.LastName, &user.Locale, &user.IsActive, &passwordHash,
+		)
+	}
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrInvalidCredentials
