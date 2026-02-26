@@ -385,11 +385,14 @@ func TestImportStudentsCSV(t *testing.T) {
 	e, _ := testServer(t)
 	token := login(t, e, "admin", "admin123")
 
+	// Use unique suffix to avoid conflicts across test runs
+	suffix := fmt.Sprintf("%d", os.Getpid())
+
 	// Build multipart form with CSV
 	csvContent := "username;password;first_name;last_name;email;class_name;date_of_birth\n" +
-		"import_test1;pass123;Max;Mustermann;max@test.de;10a;2008-05-15\n" +
-		"import_test2;pass123;Erika;Muster;;10a;2008-03-22\n" +
-		"import_test3;pass123;Bad;Date;;10a;not-a-date\n"
+		"import_test1_" + suffix + ";pass123;Max;Mustermann;max@test.de;10a;2008-05-15\n" +
+		"import_test2_" + suffix + ";pass123;Erika;Muster;;10a;2008-03-22\n" +
+		"import_test3_" + suffix + ";pass123;Bad;Date;;10a;not-a-date\n"
 
 	var buf bytes.Buffer
 	writer := multipart.NewWriter(&buf)
@@ -427,7 +430,7 @@ func TestImportStudentsCSV(t *testing.T) {
 
 	found := 0
 	for _, s := range students {
-		if s["username"] == "import_test1" || s["username"] == "import_test2" {
+		if s["username"] == "import_test1_"+suffix || s["username"] == "import_test2_"+suffix {
 			found++
 		}
 	}
