@@ -1,6 +1,6 @@
-# Binary
-eduko
-eduko-backend
+# Binary (root-level compiled output only)
+/eduko
+/eduko-backend
 *.exe
 
 # Environment
