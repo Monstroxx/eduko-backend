@@ -14,7 +14,7 @@ func GetTimetable(db *pgxpool.Pool) echo.HandlerFunc {
 	svc := services.NewTimetableService(db)
 	return func(c echo.Context) error {
 		schoolID := c.Get("school_id").(uuid.UUID)
-		entries, err := svc.Get(c.Request().Context(), schoolID,
+		entries, err := svc.GetEnriched(c.Request().Context(), schoolID,
 			c.QueryParam("class_id"), c.QueryParam("teacher_id"), c.QueryParam("date"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get timetable")

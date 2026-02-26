@@ -114,7 +114,7 @@ func (s *AttendanceService) GetByClass(ctx context.Context, schoolID, classID uu
 	}
 	defer rows.Close()
 
-	var list []models.Attendance
+	list := make([]models.Attendance, 0)
 	for rows.Next() {
 		var a models.Attendance
 		if err := rows.Scan(&a.ID, &a.SchoolID, &a.StudentID, &a.TimetableEntryID, &a.Date,
@@ -137,7 +137,7 @@ func (s *AttendanceService) GetByDate(ctx context.Context, schoolID uuid.UUID, d
 	}
 	defer rows.Close()
 
-	var list []models.Attendance
+	list := make([]models.Attendance, 0)
 	for rows.Next() {
 		var a models.Attendance
 		if err := rows.Scan(&a.ID, &a.SchoolID, &a.StudentID, &a.TimetableEntryID, &a.Date,

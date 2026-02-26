@@ -147,6 +147,22 @@ type TimetableEntry struct {
 	UpdatedAt  time.Time  `json:"updated_at" db:"updated_at"`
 }
 
+// TimetableEntryEnriched extends TimetableEntry with joined reference data
+// so clients don't need to fetch and join subjects/teachers/rooms separately.
+type TimetableEntryEnriched struct {
+	TimetableEntry
+	SubjectName         *string `json:"subject_name,omitempty"`
+	SubjectAbbreviation *string `json:"subject_abbreviation,omitempty"`
+	SubjectColor        *string `json:"subject_color,omitempty"`
+	TeacherName         *string `json:"teacher_name,omitempty"`
+	TeacherAbbreviation *string `json:"teacher_abbreviation,omitempty"`
+	RoomName            *string `json:"room_name,omitempty"`
+	ClassName           *string `json:"class_name,omitempty"`
+	TimeSlotLabel       *string `json:"time_slot_label,omitempty"`
+	TimeSlotStart       *string `json:"time_slot_start,omitempty"`
+	TimeSlotEnd         *string `json:"time_slot_end,omitempty"`
+}
+
 // ── Substitution ────────────────────────────────────────────
 
 type SubstitutionType string

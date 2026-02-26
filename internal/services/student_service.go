@@ -132,7 +132,7 @@ func (s *StudentService) GetAbsences(ctx context.Context, schoolID, studentID uu
 	}
 	defer rows.Close()
 
-	var list []models.Attendance
+	list := make([]models.Attendance, 0)
 	for rows.Next() {
 		var a models.Attendance
 		if err := rows.Scan(&a.ID, &a.SchoolID, &a.StudentID, &a.TimetableEntryID, &a.Date,

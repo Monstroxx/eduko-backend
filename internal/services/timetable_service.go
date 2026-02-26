@@ -18,6 +18,7 @@ func NewTimetableService(db *pgxpool.Pool) *TimetableService {
 	return &TimetableService{db: db}
 }
 
+// Get returns raw timetable entries (IDs only). Prefer GetEnriched for API responses.
 func (s *TimetableService) Get(ctx context.Context, schoolID uuid.UUID, classID, teacherID, date string) ([]models.TimetableEntry, error) {
 	query := `SELECT t.id, t.school_id, t.class_id, t.subject_id, t.teacher_id, t.room_id,
 	                 t.time_slot_id, t.day_of_week, t.week_type, t.valid_from, t.valid_until,
@@ -46,13 +47,82 @@ func (s *TimetableService) Get(ctx context.Context, schoolID uuid.UUID, classID,
 	}
 	defer rows.Close()
 
-	var entries []models.TimetableEntry
+	entries := make([]models.TimetableEntry, 0)
 	for rows.Next() {
 		var e models.TimetableEntry
 		if err := rows.Scan(&e.ID, &e.SchoolID, &e.ClassID, &e.SubjectID, &e.TeacherID,
 			&e.RoomID, &e.TimeSlotID, &e.DayOfWeek, &e.WeekType,
 			&e.ValidFrom, &e.ValidUntil, &e.CreatedAt, &e.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("scan timetable: %w", err)
+		}
+		entries = append(entries, e)
+	}
+	return entries, nil
+}
+
+// GetEnriched returns timetable entries joined with subjects, teachers, rooms,
+// time_slots, and classes so the Flutter client has all display data in one request.
+func (s *TimetableService) GetEnriched(ctx context.Context, schoolID uuid.UUID, classID, teacherID, date string) ([]models.TimetableEntryEnriched, error) {
+	query := `
+		SELECT
+			t.id, t.school_id, t.class_id, t.subject_id, t.teacher_id, t.room_id,
+			t.time_slot_id, t.day_of_week, t.week_type, t.valid_from, t.valid_until,
+			t.created_at, t.updated_at,
+			sub.name                              AS subject_name,
+			sub.abbreviation                      AS subject_abbreviation,
+			sub.color                             AS subject_color,
+			u.first_name || ' ' || u.last_name    AS teacher_name,
+			tch.abbreviation                      AS teacher_abbreviation,
+			r.name                                AS room_name,
+			c.name                                AS class_name,
+			ts.label                              AS time_slot_label,
+			ts.start_time::text                   AS time_slot_start,
+			ts.end_time::text                     AS time_slot_end
+		FROM timetable_entries t
+		LEFT JOIN subjects   sub ON sub.id   = t.subject_id
+		LEFT JOIN teachers   tch ON tch.id   = t.teacher_id
+		LEFT JOIN users      u   ON u.id     = tch.user_id
+		LEFT JOIN rooms      r   ON r.id     = t.room_id
+		LEFT JOIN classes    c   ON c.id     = t.class_id
+		LEFT JOIN time_slots ts  ON ts.id    = t.time_slot_id
+		WHERE t.school_id = $1`
+
+	args := []interface{}{schoolID}
+	n := 2
+
+	if classID != "" {
+		query += fmt.Sprintf(` AND t.class_id = $%d`, n)
+		args = append(args, classID)
+		n++
+	}
+	if teacherID != "" {
+		query += fmt.Sprintf(` AND t.teacher_id = $%d`, n)
+		args = append(args, teacherID)
+		n++
+	}
+
+	query += ` AND (t.valid_until IS NULL OR t.valid_until >= CURRENT_DATE)`
+	query += ` ORDER BY t.day_of_week, ts.slot_number`
+
+	rows, err := s.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("get enriched timetable: %w", err)
+	}
+	defer rows.Close()
+
+	entries := make([]models.TimetableEntryEnriched, 0)
+	for rows.Next() {
+		var e models.TimetableEntryEnriched
+		if err := rows.Scan(
+			&e.ID, &e.SchoolID, &e.ClassID, &e.SubjectID, &e.TeacherID, &e.RoomID,
+			&e.TimeSlotID, &e.DayOfWeek, &e.WeekType, &e.ValidFrom, &e.ValidUntil,
+			&e.CreatedAt, &e.UpdatedAt,
+			&e.SubjectName, &e.SubjectAbbreviation, &e.SubjectColor,
+			&e.TeacherName, &e.TeacherAbbreviation,
+			&e.RoomName, &e.ClassName,
+			&e.TimeSlotLabel, &e.TimeSlotStart, &e.TimeSlotEnd,
+		); err != nil {
+			return nil, fmt.Errorf("scan enriched timetable: %w", err)
 		}
 		entries = append(entries, e)
 	}

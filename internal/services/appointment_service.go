@@ -63,7 +63,7 @@ func (s *AppointmentService) List(ctx context.Context, schoolID uuid.UUID, apTyp
 	}
 	defer rows.Close()
 
-	var list []models.Appointment
+	list := make([]models.Appointment, 0)
 	for rows.Next() {
 		var a models.Appointment
 		if err := rows.Scan(&a.ID, &a.SchoolID, &a.Title, &a.Description, &a.Type, &a.Scope,

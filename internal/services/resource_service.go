@@ -75,7 +75,7 @@ func (s *ResourceService) ListSubjects(ctx context.Context, schoolID uuid.UUID) 
 	}
 	defer rows.Close()
 
-	var list []models.Subject
+	list := make([]models.Subject, 0)
 	for rows.Next() {
 		var sub models.Subject
 		if err := rows.Scan(&sub.ID, &sub.SchoolID, &sub.Name, &sub.Abbreviation, &sub.Color, &sub.CreatedAt); err != nil {
@@ -115,7 +115,7 @@ func (s *ResourceService) ListRooms(ctx context.Context, schoolID uuid.UUID) ([]
 	}
 	defer rows.Close()
 
-	var list []models.Room
+	list := make([]models.Room, 0)
 	for rows.Next() {
 		var r models.Room
 		if err := rows.Scan(&r.ID, &r.SchoolID, &r.Name, &r.Building, &r.CreatedAt); err != nil {
@@ -154,7 +154,7 @@ func (s *ResourceService) ListTimeSlots(ctx context.Context, schoolID uuid.UUID)
 	}
 	defer rows.Close()
 
-	var list []models.TimeSlot
+	list := make([]models.TimeSlot, 0)
 	for rows.Next() {
 		var ts models.TimeSlot
 		if err := rows.Scan(&ts.ID, &ts.SchoolID, &ts.SlotNumber, &ts.StartTime, &ts.EndTime, &ts.Label); err != nil {

@@ -91,7 +91,7 @@ func (s *LessonService) List(ctx context.Context, schoolID uuid.UUID, classID, s
 	}
 	defer rows.Close()
 
-	var list []models.LessonContent
+	list := make([]models.LessonContent, 0)
 	for rows.Next() {
 		var l models.LessonContent
 		if err := rows.Scan(&l.ID, &l.SchoolID, &l.TimetableEntryID, &l.Date, &l.Topic, &l.Homework, &l.Notes, &l.RecordedBy, &l.CreatedAt, &l.UpdatedAt); err != nil {

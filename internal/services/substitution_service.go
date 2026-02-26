@@ -59,7 +59,7 @@ func (s *SubstitutionService) List(ctx context.Context, schoolID uuid.UUID, date
 	}
 	defer rows.Close()
 
-	var list []models.Substitution
+	list := make([]models.Substitution, 0)
 	for rows.Next() {
 		var sub models.Substitution
 		if err := rows.Scan(&sub.ID, &sub.SchoolID, &sub.TimetableEntryID, &sub.Date, &sub.Type,

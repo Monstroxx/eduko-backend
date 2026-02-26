@@ -109,7 +109,7 @@ func (s *ExcuseService) List(ctx context.Context, schoolID uuid.UUID, status, st
 	}
 	defer rows.Close()
 
-	var list []models.Excuse
+	list := make([]models.Excuse, 0)
 	for rows.Next() {
 		var e models.Excuse
 		if err := rows.Scan(&e.ID, &e.SchoolID, &e.StudentID, &e.DateFrom, &e.DateTo,
