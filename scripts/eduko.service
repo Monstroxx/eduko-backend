@@ -1,0 +1,26 @@
+[Unit]
+Description=Eduko Backend API
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/eduko
+ExecStart=/opt/eduko/eduko
+
+# Required — change this in production!
+Environment=JWT_SECRET=change-me-in-production
+Environment=DATABASE_URL=postgres://eduko:eduko@localhost:5432/eduko?sslmode=disable
+Environment=PORT=8080
+Environment=CORS_ORIGINS=http://localhost,http://localhost:80,http://localhost:3000
+Environment=UPLOAD_DIR=/opt/eduko/uploads
+
+Restart=on-failure
+RestartSec=5s
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=eduko
+
+[Install]
+WantedBy=multi-user.target
