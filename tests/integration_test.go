@@ -131,6 +131,26 @@ func TestLogin_Success(t *testing.T) {
 	}
 }
 
+func TestLogin_EmptySchoolID(t *testing.T) {
+	// Simulates the Flutter app sending school_id="" (single-school mode).
+	e, _ := testServer(t)
+	body := `{"username":"admin","password":"admin123","school_id":""}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/auth/login", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected 200 for empty school_id (single-school mode), got %d: %s", rec.Code, rec.Body.String())
+	}
+
+	var result map[string]interface{}
+	json.Unmarshal(rec.Body.Bytes(), &result)
+	if result["token"] == nil || result["token"] == "" {
+		t.Error("expected non-empty token")
+	}
+}
+
 func TestLogin_WrongPassword(t *testing.T) {
 	e, _ := testServer(t)
 	body := `{"username":"admin","password":"wrong","school_id":"00000000-0000-0000-0000-000000000001"}`
