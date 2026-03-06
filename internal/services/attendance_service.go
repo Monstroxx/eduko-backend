@@ -103,11 +103,12 @@ func (s *AttendanceService) Update(ctx context.Context, schoolID, attendanceID u
 
 func (s *AttendanceService) GetByClass(ctx context.Context, schoolID, classID uuid.UUID, date string) ([]models.Attendance, error) {
 	rows, err := s.db.Query(ctx,
-		`SELECT a.id, a.school_id, a.student_id, a.timetable_entry_id, a.date, a.status, a.recorded_by, a.note, a.created_at, a.updated_at
+		`SELECT a.id, a.school_id, a.student_id, a.timetable_entry_id, a.date, a.status, a.recorded_by, a.note, a.created_at, a.updated_at,
+		        s.first_name || ' ' || s.last_name AS student_name
 		 FROM attendance a
 		 JOIN students s ON s.id = a.student_id
 		 WHERE a.school_id = $1 AND s.class_id = $2 AND a.date = $3
-		 ORDER BY a.date, a.created_at`,
+		 ORDER BY s.last_name, s.first_name`,
 		schoolID, classID, date)
 	if err != nil {
 		return nil, fmt.Errorf("get class attendance: %w", err)
@@ -118,7 +119,7 @@ func (s *AttendanceService) GetByClass(ctx context.Context, schoolID, classID uu
 	for rows.Next() {
 		var a models.Attendance
 		if err := rows.Scan(&a.ID, &a.SchoolID, &a.StudentID, &a.TimetableEntryID, &a.Date,
-			&a.Status, &a.RecordedBy, &a.Note, &a.CreatedAt, &a.UpdatedAt); err != nil {
+			&a.Status, &a.RecordedBy, &a.Note, &a.CreatedAt, &a.UpdatedAt, &a.StudentName); err != nil {
 			return nil, fmt.Errorf("scan attendance: %w", err)
 		}
 		list = append(list, a)
@@ -128,9 +129,12 @@ func (s *AttendanceService) GetByClass(ctx context.Context, schoolID, classID uu
 
 func (s *AttendanceService) GetByDate(ctx context.Context, schoolID uuid.UUID, date string) ([]models.Attendance, error) {
 	rows, err := s.db.Query(ctx,
-		`SELECT id, school_id, student_id, timetable_entry_id, date, status, recorded_by, note, created_at, updated_at
-		 FROM attendance WHERE school_id = $1 AND date = $2
-		 ORDER BY created_at`,
+		`SELECT a.id, a.school_id, a.student_id, a.timetable_entry_id, a.date, a.status, a.recorded_by, a.note, a.created_at, a.updated_at,
+		        s.first_name || ' ' || s.last_name AS student_name
+		 FROM attendance a
+		 JOIN students s ON s.id = a.student_id
+		 WHERE a.school_id = $1 AND a.date = $2
+		 ORDER BY s.last_name, s.first_name`,
 		schoolID, date)
 	if err != nil {
 		return nil, fmt.Errorf("get attendance by date: %w", err)
@@ -141,7 +145,7 @@ func (s *AttendanceService) GetByDate(ctx context.Context, schoolID uuid.UUID, d
 	for rows.Next() {
 		var a models.Attendance
 		if err := rows.Scan(&a.ID, &a.SchoolID, &a.StudentID, &a.TimetableEntryID, &a.Date,
-			&a.Status, &a.RecordedBy, &a.Note, &a.CreatedAt, &a.UpdatedAt); err != nil {
+			&a.Status, &a.RecordedBy, &a.Note, &a.CreatedAt, &a.UpdatedAt, &a.StudentName); err != nil {
 			return nil, fmt.Errorf("scan attendance: %w", err)
 		}
 		list = append(list, a)

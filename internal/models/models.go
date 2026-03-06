@@ -211,6 +211,8 @@ type Attendance struct {
 	Note             *string          `json:"note,omitempty" db:"note"`
 	CreatedAt        time.Time        `json:"created_at" db:"created_at"`
 	UpdatedAt        time.Time        `json:"updated_at" db:"updated_at"`
+	// Enriched fields (populated on GET)
+	StudentName *string `json:"student_name,omitempty" db:"student_name"`
 }
 
 // ── Excuse ──────────────────────────────────────────────────
